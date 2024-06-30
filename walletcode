@@ -1,0 +1,46 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract SimpleWallet {
+    address public owner;
+    uint public balance;
+
+    // Constructor to set the owner of the contract
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    // Modifier to check if the caller is the owner
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
+    }
+
+    // Function to deposit Ether into the wallet
+    function deposit() public payable {
+        balance += msg.value;
+    }
+
+    // Function to withdraw Ether from the wallet
+    function withdraw(uint amount) public onlyOwner {
+        require(amount <= balance, "Insufficient balance");
+        balance -= amount;
+        payable(msg.sender).transfer(amount);
+    }
+
+    // Function to check the balance
+    function checkBalance() public view returns (uint) {
+        return balance;
+    }
+
+    // Function to trigger a manual revert
+    function triggerRevert() pure public {
+        revert("Manual revert triggered");
+    }
+
+    // Function to trigger an assert failure
+    function triggerAssert() view public {
+        assert(balance == 0);                 // This will fail if balance is not zero
+    }
+}
